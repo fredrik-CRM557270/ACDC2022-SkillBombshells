@@ -48,18 +48,19 @@ namespace ACDC_PollutionAF
             
             var url = Environment.GetEnvironmentVariable("GetFlowUrl", EnvironmentVariableTarget.Process);
 
-            var client = new HttpClient { BaseAddress = new Uri(url) };
+            using (HttpClient client = new HttpClient { BaseAddress = new Uri(url) }) {
 
-            HttpRequestMessage reqmes = new HttpRequestMessage(HttpMethod.Post, client.BaseAddress);
-            
-            reqmes.Content = new StringContent(JsonConvert.SerializeObject(outData), UTF8Encoding.UTF8, "application/json");
-            reqmes.Headers.Add("Accept", "application/json");
-            reqmes.Method = HttpMethod.Post;
-            
-            HttpResponseMessage response = await client.SendAsync(reqmes);
-            log.LogInformation(await response.Content.ReadAsStringAsync());
+                HttpRequestMessage reqmes = new HttpRequestMessage(HttpMethod.Post, client.BaseAddress);
 
-            return new OkObjectResult(responseMessage);
+                reqmes.Content = new StringContent(JsonConvert.SerializeObject(outData), UTF8Encoding.UTF8, "application/json");
+                reqmes.Headers.Add("Accept", "application/json");
+                reqmes.Method = HttpMethod.Post;
+
+                HttpResponseMessage response = await client.SendAsync(reqmes);
+                log.LogInformation(await response.Content.ReadAsStringAsync());
+
+                return new OkObjectResult(responseMessage);
+            }
         }
     }
 }
